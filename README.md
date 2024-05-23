@@ -1,6 +1,7 @@
 ## V 1.04
 제품 주문 시 주문 내역 정보 추가
 userId, products.id
+주문 내역 수정은 PUT http://localhost:8080/orders/{id}/status?status=COMPLETED
 
 ## V 1.03
 제품 기본적인 정보 추가, 삭제, 수정, 검색 기능
