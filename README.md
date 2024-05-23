@@ -1,3 +1,7 @@
+## V 1.05
+제품 리뷰 기능 추가
+userId, products.id, content, rating
+
 ## V 1.04
 제품 주문 시 주문 내역 정보 추가
 userId, products.id
