@@ -1,6 +1,6 @@
 ## V 1.07
 사진 추가 가능<br />
-http://localhost:8080/products/{id}/uploadImage <br />
+POST http://localhost:8080/products/{id}/uploadImage <br />
 Body: form-data / Key: image (Type: File) / Value: 업로드할 이미지 파일 선택
 
 ## V 1.06
