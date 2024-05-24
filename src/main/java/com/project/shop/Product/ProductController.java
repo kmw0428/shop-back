@@ -47,7 +47,7 @@ public class ProductController {
         try {
             // 이미지 파일 저장
             String fileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
-            Path filePath = Paths.get(UPLOAD_DIR, fileName);
+            Path filePath = Paths.get("uploads", fileName).toAbsolutePath();
             Files.createDirectories(filePath.getParent());
             Files.write(filePath, imageFile.getBytes());
 
@@ -55,13 +55,7 @@ public class ProductController {
             Optional<Product> productOptional = productService.getProductById(id);
             if (productOptional.isPresent()) {
                 Product product = productOptional.get();
-
-                if (product.getImageUrl() != null) {
-                    Path oldImagePath = Paths.get(UPLOAD_DIR, product.getImageUrl().substring(UPLOAD_DIR.length()));
-                    Files.deleteIfExists(oldImagePath);
-                }
-
-                product.setImageUrl("/uploads/" + fileName);
+                product.setImageUrl("/uploads/" + fileName.replace("\\", "/"));
                 productService.addProduct(product);
                 return ResponseEntity.ok("Image uploaded successfully");
             } else {
