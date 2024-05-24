@@ -1,3 +1,7 @@
+## V 1.06
+로그인 기능 추가
+아직 보안이 제대로 진행되지않아 수정요망
+
 ## V 1.05
 제품 리뷰 기능 추가
 userId, products.id, content, rating
