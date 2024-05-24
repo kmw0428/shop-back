@@ -1,18 +1,18 @@
 ## V 1.06
-로그인 기능 추가
+로그인 기능 추가 <br />
 아직 보안이 제대로 진행되지않아 수정요망
 
 ## V 1.05
-제품 리뷰 기능 추가
+제품 리뷰 기능 추가 <br />
 userId, products.id, content, rating
 
 ## V 1.04
-제품 주문 시 주문 내역 정보 추가
-userId, products.id
+제품 주문 시 주문 내역 정보 추가 <br />
+userId, products.id <br />
 주문 내역 수정은 PUT http://localhost:8080/orders/{id}/status?status=COMPLETED
 
 ## V 1.03
-제품 기본적인 정보 추가, 삭제, 수정, 검색 기능
+제품 기본적인 정보 추가, 삭제, 수정, 검색 기능 <br />
 name, description, price, category, stock
 
 ## V 1.02
