@@ -1,10 +1,17 @@
 package com.project.shop.Product;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @CrossOrigin
 @RestController
@@ -13,6 +20,8 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+
+    private static final String UPLOAD_DIR = "uploads/";
 
     @GetMapping
     public List<Product> getAllProducts(){
@@ -27,6 +36,40 @@ public class ProductController {
     @PostMapping
     public Product addProduct(@RequestBody Product product) {
         return productService.addProduct(product);
+    }
+
+    @PostMapping("/{id}/uploadImage")
+    public ResponseEntity<String> uploadImage(@PathVariable String id, @RequestParam("image") MultipartFile imageFile) {
+        if (imageFile.isEmpty()) {
+            return ResponseEntity.badRequest().body("Image file is empty");
+        }
+
+        try {
+            // 이미지 파일 저장
+            String fileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
+            Path filePath = Paths.get(UPLOAD_DIR, fileName);
+            Files.createDirectories(filePath.getParent());
+            Files.write(filePath, imageFile.getBytes());
+
+            // Product의 imageUrl 업데이트
+            Optional<Product> productOptional = productService.getProductById(id);
+            if (productOptional.isPresent()) {
+                Product product = productOptional.get();
+
+                if (product.getImageUrl() != null) {
+                    Path oldImagePath = Paths.get(UPLOAD_DIR, product.getImageUrl().substring(UPLOAD_DIR.length()));
+                    Files.deleteIfExists(oldImagePath);
+                }
+
+                product.setImageUrl("/uploads/" + fileName);
+                productService.addProduct(product);
+                return ResponseEntity.ok("Image uploaded successfully");
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Failed to upload image");
+        }
     }
 
     @PutMapping("/{id}")
