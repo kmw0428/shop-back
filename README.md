@@ -1,3 +1,6 @@
+## V 1.08
+사진 폴더 추가
+
 ## V 1.07
 사진 추가 가능<br />
 POST http://localhost:8080/products/{id}/uploadImage <br />
