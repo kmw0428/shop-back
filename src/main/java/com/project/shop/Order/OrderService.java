@@ -2,6 +2,8 @@ package com.project.shop.Order;
 
 import com.project.shop.Product.Product;
 import com.project.shop.Product.ProductRepository;
+import com.project.shop.User.User;
+import com.project.shop.User.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,9 @@ public class OrderService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
@@ -29,8 +34,8 @@ public class OrderService {
         return orderRepository.findById(id);
     }
 
-    public List<Order> getOrderByUserId(String userId) {
-        return orderRepository.findByUserId(userId);
+    public List<Order> getOrderByUser(User user) {
+        return orderRepository.findByUser(user);
     }
 
     public Order createOrder(Order order) {
@@ -40,6 +45,11 @@ public class OrderService {
                 .collect(Collectors.toList());
 
         order.setProducts(products);
+
+        User user = userRepository.findById(order.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("User not found: " + order.getUser().getId()));
+        order.setUser(user);
+
         order.setOrderDate(new Date());
         order.setStatus("PENDING");
 

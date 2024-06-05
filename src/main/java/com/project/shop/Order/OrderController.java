@@ -1,5 +1,6 @@
 package com.project.shop.Order;
 
+import com.project.shop.User.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,9 +25,9 @@ public class OrderController {
         return orderService.getOrderById(id);
     }
 
-    @GetMapping("/user/{userId}")
-    public List<Order> getOrderByUserId(@PathVariable String userId) {
-        return orderService.getOrderByUserId(userId);
+    @GetMapping("/user/{user}")
+    public List<Order> getOrderByUserId(@PathVariable User user) {
+        return orderService.getOrderByUser(user);
     }
 
     @PostMapping
