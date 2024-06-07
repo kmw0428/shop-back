@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,25 +39,26 @@ public class AuthController {
             );
 
             System.out.println("Authentication successful for user: " + authRequest.getUsername());
-            String jwt = jwtUtil.generateToken(authRequest.getUsername());
-            System.out.println("JWT generated: " + jwt);
-            String refreshJwt = jwtUtil.generateRefreshToken(authRequest.getUsername());
-            System.out.println("Refresh JWT generated: " + refreshJwt);
-            User user = userService.getUserByUsername(authRequest.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-            // 사용자 정보를 포함하여 응답
+            // 사용자 정보 가져오기
+            User user = userService.getUserByUsername(authRequest.getUsername())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + authRequest.getUsername()));
+
+            String jwt = jwtUtil.generateToken(userDetails.getUsername());
+            String refreshJwt = jwtUtil.generateRefreshToken(userDetails.getUsername());
+
             Map<String, Object> response = new HashMap<>();
             response.put("accessToken", jwt);
             response.put("refreshToken", refreshJwt);
-            response.put("user", user);  // 사용자 정보를 응답에 추가
+            response.put("username", userDetails.getUsername());
+            response.put("userId", user.getId()); // 사용자 ID 추가
 
-            return ResponseEntity.ok(response);  // 액세스 토큰과 리프레시 토큰 반환
+            return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
+            System.out.println("Authentication failed for user: " + authRequest.getUsername());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error during login!");
         }
     }
 
