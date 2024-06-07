@@ -18,4 +18,8 @@ public class Product {
     private int price;
     private String category;
     private String imageUrl;
+    private String ingredient;
+    private String recommender;
+    private String htu;
+
 }
