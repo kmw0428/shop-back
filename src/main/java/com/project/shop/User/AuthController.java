@@ -62,6 +62,7 @@ public class AuthController {
         }
     }
 
+
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@RequestBody RefreshRequest refreshRequest) {
         try {
@@ -71,7 +72,7 @@ public class AuthController {
 
             if (jwtUtil.validateToken(refreshToken, username)) {
                 String newAccessToken = jwtUtil.generateToken(username);
-                return ResponseEntity.ok(new AuthResponse(newAccessToken, refreshToken));
+                return ResponseEntity.ok(new AuthResponse(newAccessToken, refreshToken, null)); // 사용자 ID 없음
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token!");
             }
