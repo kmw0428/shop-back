@@ -1,6 +1,7 @@
 package com.project.shop.Review;
 
 import com.project.shop.Product.Product;
+import com.project.shop.User.User;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -15,7 +16,8 @@ public class Review {
     @Id
     private String id;
 
-    private String userId;
+    @DBRef
+    private User user;
 
     @DBRef
     private Product product;

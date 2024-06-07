@@ -39,9 +39,16 @@ public class UserService {
 
     public Optional<User> updateUser(String id, User user) {
         return userRepository.findById(id).map(existingUser -> {
-            existingUser.setUsername(user.getUsername());
-            existingUser.setEmail(user.getEmail());
-            existingUser.setNickname(user.getNickname());
+            if (user.getUsername() != null) existingUser.setUsername(user.getUsername());
+            if (user.getEmail() != null) existingUser.setEmail(user.getEmail());
+            if (user.getNickname() != null) existingUser.setNickname(user.getNickname());
+            if (user.getAge() != 0) existingUser.setAge(user.getAge());
+            if (user.getPhoneNumber() != null) existingUser.setPhoneNumber(user.getPhoneNumber());
+            if (user.getAddress() != null) existingUser.setAddress(user.getAddress());
+            if (user.getGender() != null) existingUser.setGender(user.getGender());
+            if (user.getBirthDate() != null) existingUser.setBirthDate(user.getBirthDate());
+            if (user.getSkinType() != null) existingUser.setSkinType(user.getSkinType());
+            if (user.getScalpType() != null) existingUser.setScalpType(user.getScalpType());
             if (user.getPassword() != null && !user.getPassword().isEmpty()) {
                 existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
             }

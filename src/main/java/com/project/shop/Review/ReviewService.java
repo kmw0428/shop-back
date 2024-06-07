@@ -2,6 +2,8 @@ package com.project.shop.Review;
 
 import com.project.shop.Product.Product;
 import com.project.shop.Product.ProductRepository;
+import com.project.shop.User.User;
+import com.project.shop.User.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,9 @@ public class ReviewService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public List<Review> getAllReviews() {
         return reviewRepository.findAll();
     }
@@ -27,18 +32,22 @@ public class ReviewService {
         return reviewRepository.findById(id);
     }
 
-    public List<Review> getReviewByProductId(String productId) {
-        return reviewRepository.findByProductId(productId);
+    public List<Review> getReviewByProduct(Product product) {
+        return reviewRepository.findByProduct(product);
     }
 
-    public List<Review> getReviewByUserId(String userId) {
-        return reviewRepository.findByUserId(userId);
+    public List<Review> getReviewByUser(User user) {
+        return reviewRepository.findByUser(user);
     }
 
     public Review createReview(Review review) {
         Product product = productRepository.findById(review.getProduct().getId())
                 .orElseThrow(() -> new RuntimeException("Product not found: " + review.getProduct().getId()));
         review.setProduct(product);
+
+        User user = userRepository.findById(review.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("User not found: " + review.getUser().getId()));
+        review.setUser(user);
 
         return reviewRepository.save(review);
     }

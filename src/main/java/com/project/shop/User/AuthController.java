@@ -7,10 +7,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -38,7 +42,15 @@ public class AuthController {
             System.out.println("JWT generated: " + jwt);
             String refreshJwt = jwtUtil.generateRefreshToken(authRequest.getUsername());
             System.out.println("Refresh JWT generated: " + refreshJwt);
-            return ResponseEntity.ok(new AuthResponse(jwt, refreshJwt));  // 액세스 토큰과 리프레시 토큰 반환
+            User user = userService.getUserByUsername(authRequest.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+            // 사용자 정보를 포함하여 응답
+            Map<String, Object> response = new HashMap<>();
+            response.put("accessToken", jwt);
+            response.put("refreshToken", refreshJwt);
+            response.put("user", user);  // 사용자 정보를 응답에 추가
+
+            return ResponseEntity.ok(response);  // 액세스 토큰과 리프레시 토큰 반환
         } catch (AuthenticationException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed!");

@@ -1,5 +1,7 @@
 package com.project.shop.Review;
 
+import com.project.shop.Product.Product;
+import com.project.shop.User.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,14 +26,14 @@ public class ReviewController {
         return reviewService.getReviewById(id);
     }
 
-    @GetMapping("/product/{productId}")
-    public List<Review> getReviewByProductId(@PathVariable String productId) {
-        return reviewService.getReviewByProductId(productId);
+    @GetMapping("/product/{product}")
+    public List<Review> getReviewByProductId(@PathVariable Product product) {
+        return reviewService.getReviewByProduct(product);
     }
 
-    @GetMapping("/user/{userId}")
-    public List<Review> getReviewByUserId(@PathVariable String userId) {
-        return reviewService.getReviewByUserId(userId);
+    @GetMapping("/user/{user}")
+    public List<Review> getReviewByUserId(@PathVariable User user) {
+        return reviewService.getReviewByUser(user);
     }
 
     @PostMapping

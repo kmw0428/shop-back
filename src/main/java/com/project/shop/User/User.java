@@ -15,4 +15,11 @@ public class User {
     private String password;
     private String email;
     private String nickname;
+    private int age;
+    private String phoneNumber;
+    private String address;
+    private String gender;
+    private String birthDate;
+    private String skinType;
+    private String scalpType;
 }
