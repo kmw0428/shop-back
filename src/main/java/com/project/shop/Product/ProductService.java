@@ -35,8 +35,8 @@ public class ProductService {
         product.setCategory(productDetails.getCategory());
         product.setImageUrl(productDetails.getImageUrl());
         product.setIngredient(productDetails.getIngredient());
-        product.setRecommender(product.getRecommender());
-        product.setHtu(product.getHtu());
+        product.setRecommender(productDetails.getRecommender());
+        product.setHtu(productDetails.getHtu());
         return productRepository.save(product);
     }
 
