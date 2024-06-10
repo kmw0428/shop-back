@@ -9,10 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -92,5 +89,25 @@ public class AuthController {
         }
         userService.registerUser(user);
         return "Registration successful!";
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestParam String email) {
+        try {
+            userService.sendPasswordResetToken(email);
+            return ResponseEntity.ok("Password reset token sent!");
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(404).body("User not found");
+        }
+    }
+
+    @PostMapping("/confirm-reset")
+    public ResponseEntity<?> confirmReset(@RequestParam String token, @RequestParam String newPassword) {
+        try {
+            userService.resetPassword(token, newPassword);
+            return ResponseEntity.ok("Password has been reset successfully!");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body("Invalid token");
+        }
     }
 }

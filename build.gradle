@@ -29,6 +29,7 @@ dependencies {
 	implementation 'jakarta.servlet:jakarta.servlet-api:5.0.0'
 	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:3.0.1'
 	implementation 'org.glassfish.jaxb:jaxb-runtime:3.0.1'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 	compileOnly 'org.projectlombok:lombok'
