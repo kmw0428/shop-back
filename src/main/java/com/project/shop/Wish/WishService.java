@@ -40,6 +40,10 @@ public class WishService {
         return wishRepository.findByProduct(product);
     }
 
+    public Optional<Wish> getWishByUserIdAndProductId(String userId, String productId) {
+        return wishRepository.findByUserIdAndProductId(userId, productId);
+    }
+
     public Wish createWish(Wish wish) {
         Product product = productRepository.findById(wish.getProduct().getId())
                 .orElseThrow(() -> new RuntimeException("Product not found: " + wish.getProduct().getId()));

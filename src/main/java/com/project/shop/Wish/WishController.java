@@ -37,6 +37,11 @@ public class WishController {
         return wishService.getWishByUser(user);
     }
 
+    @GetMapping("/product/{productId}/user/{userId}")
+    public Optional<Wish> getWishByUserIdAndProductId(@PathVariable String userId, @PathVariable String productId) {
+        return wishService.getWishByUserIdAndProductId(userId, productId);
+    }
+
     @PostMapping
     public Wish createWish(@RequestBody Wish wish) {
         return wishService.createWish(wish);
