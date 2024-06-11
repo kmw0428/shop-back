@@ -53,16 +53,67 @@ public class OrderService {
         order.setOrderDate(new Date());
         order.setStatus("PENDING");
 
-        double totalAmount = products.stream().mapToDouble(Product::getPrice).sum();
-        order.setTotalAmount(totalAmount);
+        int newTotalAmount = products.stream().mapToInt(Product::getPrice).sum();
 
-        return orderRepository.save(order);
+        // Check for existing order with same product ID and status PENDING
+        List<Order> existingOrders = orderRepository.findByUser(user);
+        Optional<Order> existingOrderOpt = existingOrders.stream()
+                .filter(o -> o.getStatus().equals("PENDING"))
+                .filter(o -> o.getProducts().stream()
+                        .anyMatch(p -> products.stream()
+                                .anyMatch(np -> np.getId().equals(p.getId()))))
+                .findFirst();
+
+        if (existingOrderOpt.isPresent()) {
+            Order existingOrder = existingOrderOpt.get();
+
+            for (Product newProduct : products) {
+                Optional<Product> existingProductOpt = existingOrder.getProducts().stream()
+                        .filter(p -> p.getId().equals(newProduct.getId()))
+                        .findFirst();
+
+                if (existingProductOpt.isPresent()) {
+                    // Same product ID exists, just update totalAmount
+                    existingOrder.setTotalAmount(existingOrder.getTotalAmount() + newProduct.getPrice());
+                }
+            }
+
+            // Update existing order
+            return orderRepository.save(existingOrder);
+        } else {
+            // Create new order
+            order.setTotalAmount(newTotalAmount);
+            return orderRepository.save(order);
+        }
     }
 
     public Order updateOrderStatus(String id, String status) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
         order.setStatus(status);
         return orderRepository.save(order);
+    }
+
+    public Optional<Order> updateOrderQuantity(String userId, String productId, int newTotalAmount) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+        List<Order> orders = orderRepository.findByUser(user);
+        if (orders.isEmpty()) {
+            return Optional.empty();
+        }
+
+        for (Order order : orders) {
+            for (Product product : order.getProducts()) {
+                if (product.getId().equals(productId)) {
+                    int oldTotalAmount = product.getPrice() * (order.getTotalAmount() / product.getPrice());
+                    order.setTotalAmount(order.getTotalAmount() - oldTotalAmount + newTotalAmount);
+                    orderRepository.save(order);
+                    return Optional.of(order);
+                }
+            }
+        }
+
+        return Optional.empty();
     }
 
     public void deleteOrder(String id) {

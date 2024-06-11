@@ -25,7 +25,7 @@ public class Order {
     @DBRef
     private List<Product> products;
 
-    private double totalAmount;
+    private int totalAmount;
     private String status;
     private Date orderDate;
 }
