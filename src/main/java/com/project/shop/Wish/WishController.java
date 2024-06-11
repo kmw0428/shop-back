@@ -37,6 +37,11 @@ public class WishController {
         return wishService.getWishByUser(user);
     }
 
+    @PostMapping
+    public Wish createWish(@RequestBody Wish wish) {
+        return wishService.createWish(wish);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteWish(@PathVariable String id){wishService.deleteWish(id);}
 }
