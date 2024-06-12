@@ -39,6 +39,7 @@ public class OrderService {
     }
 
     public Order createOrder(Order order) {
+        // 제품 정보 설정
         List<Product> products = order.getProducts().stream()
                 .map(product -> productRepository.findById(product.getId())
                         .orElseThrow(() -> new RuntimeException("Product not found: " + product.getId())))
@@ -46,16 +47,19 @@ public class OrderService {
 
         order.setProducts(products);
 
+        // 사용자 정보 설정
         User user = userRepository.findById(order.getUser().getId())
                 .orElseThrow(() -> new RuntimeException("User not found: " + order.getUser().getId()));
         order.setUser(user);
 
+        // 주문 날짜 및 상태 설정
         order.setOrderDate(new Date());
         order.setStatus("PENDING");
 
-        int newTotalAmount = products.stream().mapToInt(Product::getPrice).sum();
+        // 총 금액 계산 (각 제품의 수량을 고려)
+        int newTotalAmount = order.getTotalAmount();
 
-        // Check for existing order with same product ID and status PENDING
+        // 기존 주문 확인
         List<Order> existingOrders = orderRepository.findByUser(user);
         Optional<Order> existingOrderOpt = existingOrders.stream()
                 .filter(o -> o.getStatus().equals("PENDING"))
@@ -67,21 +71,22 @@ public class OrderService {
         if (existingOrderOpt.isPresent()) {
             Order existingOrder = existingOrderOpt.get();
 
+            // 기존 주문에 새 제품 추가 및 총 금액 업데이트
             for (Product newProduct : products) {
                 Optional<Product> existingProductOpt = existingOrder.getProducts().stream()
                         .filter(p -> p.getId().equals(newProduct.getId()))
                         .findFirst();
 
                 if (existingProductOpt.isPresent()) {
-                    // Same product ID exists, just update totalAmount
-                    existingOrder.setTotalAmount(existingOrder.getTotalAmount() + newProduct.getPrice());
+                    // 동일한 제품 ID가 존재하는 경우, 수량 및 총 금액 업데이트
+                    existingOrder.setTotalAmount(existingOrder.getTotalAmount() + newTotalAmount);
                 }
             }
 
             // Update existing order
             return orderRepository.save(existingOrder);
         } else {
-            // Create new order
+            // 새로운 주문 생성
             order.setTotalAmount(newTotalAmount);
             return orderRepository.save(order);
         }
