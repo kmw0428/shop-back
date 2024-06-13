@@ -1,6 +1,5 @@
 package com.project.shop.Order;
 
-import com.project.shop.Product.Product;
 import com.project.shop.User.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

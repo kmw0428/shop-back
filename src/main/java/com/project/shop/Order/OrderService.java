@@ -4,7 +4,7 @@ import com.project.shop.Product.Product;
 import com.project.shop.Product.ProductRepository;
 import com.project.shop.User.User;
 import com.project.shop.User.UserRepository;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,18 +13,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Service
 public class OrderService {
 
-    @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
+
+    private final ProductRepository productRepository;
+
+    private final UserRepository userRepository;
 
     @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    public OrderService(OrderRepository orderRepository, ProductRepository productRepository, UserRepository userRepository) {
+        this.orderRepository = orderRepository;
+        this.productRepository = productRepository;
+        this.userRepository = userRepository;
+    }
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();

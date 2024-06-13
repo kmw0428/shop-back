@@ -1,13 +1,9 @@
 package com.project.shop.User;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Setter
-@Getter
 @Document(collection = "password_reset_tokens")
 public class PasswordResetToken {
 
@@ -23,5 +19,27 @@ public class PasswordResetToken {
         this.user = user;
     }
 
-    // getters and setters 생략...
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

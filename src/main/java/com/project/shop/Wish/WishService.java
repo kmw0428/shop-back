@@ -12,17 +12,20 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @Service
 public class WishService {
-    @Autowired
-    private WishRepository wishRepository;
+    private final WishRepository wishRepository;
+
+    private final ProductRepository productRepository;
+
+    private final UserRepository userRepository;
 
     @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    public WishService(WishRepository wishRepository, ProductRepository productRepository, UserRepository userRepository) {
+        this.wishRepository = wishRepository;
+        this.productRepository = productRepository;
+        this.userRepository = userRepository;
+    }
 
     public List<Wish> getAllWish() {
         return wishRepository.findAll();
