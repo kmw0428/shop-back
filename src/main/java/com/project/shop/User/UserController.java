@@ -16,6 +16,11 @@
         @Autowired
         private UserService userService;
 
+        @GetMapping
+        public List<User> getAllUsers() {
+            return userService.getAllUsers();
+        }
+
         @GetMapping("/{id}")
         public ResponseEntity<User> getUserById(@PathVariable String id) {
 

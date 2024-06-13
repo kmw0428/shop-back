@@ -20,10 +20,11 @@ public class User {
     private String birthDate;
     private String skinType;
     private String scalpType;
+    private String role;
 
     public User() {}
 
-    public User(String id, String username, String password, String email, String nickname, int age, String phoneNumber, String address, String gender, String birthDate, String skinType, String scalpType) {
+    public User(String id, String username, String password, String email, String nickname, int age, String phoneNumber, String address, String gender, String birthDate, String skinType, String scalpType, String role) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -36,6 +37,7 @@ public class User {
         this.birthDate = birthDate;
         this.skinType = skinType;
         this.scalpType = scalpType;
+        this.role = role;
     }
 
     public String getId() {
@@ -134,6 +136,14 @@ public class User {
         this.scalpType = scalpType;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -149,6 +159,7 @@ public class User {
                 ", birthDate='" + birthDate + '\'' +
                 ", skinType='" + skinType + '\'' +
                 ", scalpType='" + scalpType + '\'' +
+                ", role='" + role + '\'' +
                 '}';
     }
 
