@@ -8,4 +8,5 @@ public interface ProductRepository extends MongoRepository<Product, String> {
 
     List<Product> findByCategory(String category);
     List<Product> findByNameContaining(String name);
+    List<Product> findByStatus(String status);
 }

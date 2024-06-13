@@ -53,4 +53,8 @@ public class ProductService {
     public List<Product> searchProductsByName (String name) {
         return productRepository.findByNameContaining(name);
     }
+
+    public List<Product> getProductsByStatus (String status) {
+        return productRepository.findByStatus(status);
+    }
 }

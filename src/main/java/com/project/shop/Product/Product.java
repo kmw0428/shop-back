@@ -17,6 +17,7 @@ public class Product {
     private String ingredient;
     private String recommender;
     private String htu;
+    private String status;
 
     public String getId() {
         return id;
@@ -88,5 +89,13 @@ public class Product {
 
     public void setHtu(String htu) {
         this.htu = htu;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

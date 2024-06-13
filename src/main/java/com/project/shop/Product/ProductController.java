@@ -81,6 +81,11 @@ public class ProductController {
         return productService.getProductsByCategory(category);
     }
 
+    @GetMapping("/status/{status}")
+    public List<Product> getProductsByStatus(@PathVariable String status) {
+        return productService.getProductsByStatus(status);
+    }
+
     @GetMapping("/search")
     public List<Product> getProductsByName(@RequestParam String name) {
         return productService.searchProductsByName(name);
