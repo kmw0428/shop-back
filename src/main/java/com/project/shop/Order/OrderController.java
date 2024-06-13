@@ -47,8 +47,9 @@ public class OrderController {
     }
 
     @PutMapping("/{id}/status")
-    public Order updateOrderStatus(@PathVariable String id, @RequestParam String status) {
-        return orderService.updateOrderStatus(id, status);
+    public ResponseEntity<Order> updateOrderStatus(@PathVariable String id, @RequestParam String status) {
+        Order updatedOrder = orderService.updateOrderStatus(id, status);
+        return ResponseEntity.ok(updatedOrder);
     }
 
     @DeleteMapping("/{id}")
