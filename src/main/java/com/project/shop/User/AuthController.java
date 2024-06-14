@@ -94,8 +94,8 @@ public class AuthController {
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestParam String email) {
         try {
-            userService.sendPasswordResetToken(email);
-            return ResponseEntity.ok("Password reset token sent!");
+            String token = userService.sendPasswordResetToken(email);
+            return ResponseEntity.ok("Password reset token: " + token);
         } catch (UsernameNotFoundException e) {
             return ResponseEntity.status(404).body("User not found");
         }
