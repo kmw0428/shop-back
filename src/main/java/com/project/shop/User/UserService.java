@@ -1,7 +1,6 @@
 package com.project.shop.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,9 +25,6 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private JavaMailSender emailSender;
 
     public String sendPasswordResetToken(String email) {
         Optional<User> userOptional = userRepository.findByEmail(email);
