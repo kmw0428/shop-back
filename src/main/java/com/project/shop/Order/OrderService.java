@@ -61,6 +61,7 @@ public class OrderService {
 
         // 총 금액 계산 (각 제품의 수량을 고려)
         int newTotalAmount = order.getTotalAmount();
+        int newQuantity = newTotalAmount / products.get(0).getPrice();
 
         // 기존 주문 확인
         List<Order> existingOrders = orderRepository.findByUser(user);
@@ -83,6 +84,7 @@ public class OrderService {
                 if (existingProductOpt.isPresent()) {
                     // 동일한 제품 ID가 존재하는 경우, 수량 및 총 금액 업데이트
                     existingOrder.setTotalAmount(existingOrder.getTotalAmount() + newTotalAmount);
+                    existingOrder.setQuantity(existingOrder.getQuantity() + newQuantity);
                 }
             }
 
@@ -91,6 +93,7 @@ public class OrderService {
         } else {
             // 새로운 주문 생성
             order.setTotalAmount(newTotalAmount);
+            order.setQuantity(newQuantity);
             return orderRepository.save(order);
         }
     }
@@ -122,6 +125,46 @@ public class OrderService {
         }
 
         return Optional.empty();
+    }
+
+    public Order mergeOrders(String userId, List<String> orderIds) {
+        List<Order> orders = orderRepository.findAllById(orderIds);
+
+        if (orders.isEmpty()) {
+            throw new IllegalArgumentException("No orders found for the given IDs");
+        }
+
+        // 사용자 검증
+        for (Order order : orders) {
+            if (!order.getUser().getId().equals(userId)) {
+                throw new IllegalArgumentException("Orders do not belong to the same user");
+            }
+        }
+
+        // 새로운 주문 생성
+        Order newOrder = new Order();
+        newOrder.setUser(orders.get(0).getUser()); // 같은 사용자를 가정
+        newOrder.setOrderDate(new Date());
+        newOrder.setStatus("PAID");
+
+        // 모든 제품을 새로운 주문에 추가
+        List<Product> allProducts = orders.stream()
+                .flatMap(order -> order.getProducts().stream())
+                .collect(Collectors.toList());
+        newOrder.setProducts(allProducts);
+
+        // 총 금액 계산 및 수량 설정
+        int totalAmount = allProducts.stream()
+                .mapToInt(Product::getPrice)
+                .sum();
+        newOrder.setTotalAmount(totalAmount);
+        newOrder.setQuantity(totalAmount / allProducts.get(0).getPrice());
+
+        // 기존 주문 삭제
+        orderRepository.deleteAll(orders);
+
+        // 새로운 주문 저장
+        return orderRepository.save(newOrder);
     }
 
     public void deleteOrder(String id) {

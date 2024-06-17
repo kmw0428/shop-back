@@ -26,6 +26,8 @@ public class Order {
     private String status;
     private Date orderDate;
 
+    private int quantity;
+
     public String getId() {
         return id;
     }
@@ -72,5 +74,13 @@ public class Order {
 
     public void setOrderDate(Date orderDate) {
         this.orderDate = orderDate;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }
