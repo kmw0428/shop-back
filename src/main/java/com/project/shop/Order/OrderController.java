@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin
@@ -57,8 +58,12 @@ public class OrderController {
         orderService.deleteOrder(id);
     }
 
-    @PutMapping("/{userId}/merge")
-    public OrderStatus mergeOrders(@PathVariable String userId, @RequestBody List<String> orderIds) {
-        return orderService.mergeOrders(userId, orderIds);
+    @PutMapping("/merge")
+    public ResponseEntity<OrderStatus> mergeOrders(@RequestBody Map<String, Object> request) {
+        String userId = (String) request.get("userId");
+        List<String> orderIds = (List<String>) request.get("orderIds");
+        String status = (String) request.get("status");
+        OrderStatus orderStatus = orderService.mergeOrdersAndUpdateStatus(userId, orderIds, status);
+        return ResponseEntity.ok(orderStatus);
     }
 }

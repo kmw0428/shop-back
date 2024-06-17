@@ -125,31 +125,27 @@ public class OrderService {
         return Optional.empty();
     }
 
-    public OrderStatus mergeOrders(String userId, List<String> orderIds) {
+    public OrderStatus mergeOrdersAndUpdateStatus(String userId, List<String> orderIds, String status) {
         List<Order> orders = orderRepository.findAllById(orderIds);
 
         if (orders.isEmpty()) {
             throw new IllegalArgumentException("No orders found for the given IDs");
         }
 
-        // 사용자 검증
         for (Order order : orders) {
             if (!order.getUser().getId().equals(userId)) {
                 throw new IllegalArgumentException("Orders do not belong to the same user");
             }
         }
 
-        // 새로운 주문 상태 생성
         OrderStatus newOrderStatus = new OrderStatus();
         newOrderStatus.setOrders(orders);
 
-        // 기존 주문의 상태를 PAID로 업데이트
         for (Order order : orders) {
-            order.setStatus("PAID");
+            order.setStatus(status);
             orderRepository.save(order);
         }
 
-        // 새로운 주문 상태 저장
         return orderStatusRepository.save(newOrderStatus);
     }
 

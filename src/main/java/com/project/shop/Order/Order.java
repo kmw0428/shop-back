@@ -50,6 +50,7 @@ public class Order {
 
     public void setProducts(List<Product> products) {
         this.products = products;
+        updateQuantity();
     }
 
     public int getTotalAmount() {
@@ -58,6 +59,7 @@ public class Order {
 
     public void setTotalAmount(int totalAmount) {
         this.totalAmount = totalAmount;
+        updateQuantity();
     }
 
     public String getStatus() {
@@ -82,5 +84,13 @@ public class Order {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    private void updateQuantity() {
+        if (products != null && !products.isEmpty()) {
+            this.quantity = totalAmount / products.get(0).getPrice();
+        } else {
+            this.quantity = 0;
+        }
     }
 }
