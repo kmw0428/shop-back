@@ -4,7 +4,6 @@ import com.project.shop.Product.Product;
 import com.project.shop.Product.ProductRepository;
 import com.project.shop.User.User;
 import com.project.shop.User.UserRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,16 +16,16 @@ import java.util.stream.Collectors;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-
     private final ProductRepository productRepository;
-
     private final UserRepository userRepository;
+    private final OrderStatusRepository orderStatusRepository;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, ProductRepository productRepository, UserRepository userRepository) {
+    public OrderService(OrderRepository orderRepository, ProductRepository productRepository, UserRepository userRepository, OrderStatusRepository orderStatusRepository) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
+        this.orderStatusRepository = orderStatusRepository;
     }
 
     public List<Order> getAllOrders() {
@@ -59,11 +58,14 @@ public class OrderService {
         order.setOrderDate(new Date());
         order.setStatus("PENDING");
 
-        // 총 금액 계산 (각 제품의 수량을 고려)
+        // 총 금액 및 수량 설정
         int newTotalAmount = order.getTotalAmount();
-        int newQuantity = newTotalAmount / products.get(0).getPrice();
+        int newQuantity = newTotalAmount / products.get(0).getPrice();  // 수량 계산
 
-        // 기존 주문 확인
+        order.setTotalAmount(newTotalAmount);
+        order.setQuantity(newQuantity);  // 수량 설정
+
+        // 기존 주문 확인 및 업데이트
         List<Order> existingOrders = orderRepository.findByUser(user);
         Optional<Order> existingOrderOpt = existingOrders.stream()
                 .filter(o -> o.getStatus().equals("PENDING"))
@@ -74,26 +76,22 @@ public class OrderService {
 
         if (existingOrderOpt.isPresent()) {
             Order existingOrder = existingOrderOpt.get();
-
-            // 기존 주문에 새 제품 추가 및 총 금액 업데이트
             for (Product newProduct : products) {
                 Optional<Product> existingProductOpt = existingOrder.getProducts().stream()
                         .filter(p -> p.getId().equals(newProduct.getId()))
                         .findFirst();
 
                 if (existingProductOpt.isPresent()) {
-                    // 동일한 제품 ID가 존재하는 경우, 수량 및 총 금액 업데이트
                     existingOrder.setTotalAmount(existingOrder.getTotalAmount() + newTotalAmount);
-                    existingOrder.setQuantity(existingOrder.getQuantity() + newQuantity);
+                    existingOrder.setQuantity(existingOrder.getQuantity() + newQuantity);  // 수량 업데이트
+                } else {
+                    existingOrder.getProducts().add(newProduct);
+                    existingOrder.setTotalAmount(existingOrder.getTotalAmount() + newTotalAmount);
+                    existingOrder.setQuantity(existingOrder.getQuantity() + newQuantity);  // 수량 업데이트
                 }
             }
-
-            // Update existing order
             return orderRepository.save(existingOrder);
         } else {
-            // 새로운 주문 생성
-            order.setTotalAmount(newTotalAmount);
-            order.setQuantity(newQuantity);
             return orderRepository.save(order);
         }
     }
@@ -127,7 +125,7 @@ public class OrderService {
         return Optional.empty();
     }
 
-    public Order mergeOrders(String userId, List<String> orderIds) {
+    public OrderStatus mergeOrders(String userId, List<String> orderIds) {
         List<Order> orders = orderRepository.findAllById(orderIds);
 
         if (orders.isEmpty()) {
@@ -141,30 +139,18 @@ public class OrderService {
             }
         }
 
-        // 새로운 주문 생성
-        Order newOrder = new Order();
-        newOrder.setUser(orders.get(0).getUser()); // 같은 사용자를 가정
-        newOrder.setOrderDate(new Date());
-        newOrder.setStatus("PAID");
+        // 새로운 주문 상태 생성
+        OrderStatus newOrderStatus = new OrderStatus();
+        newOrderStatus.setOrders(orders);
 
-        // 모든 제품을 새로운 주문에 추가
-        List<Product> allProducts = orders.stream()
-                .flatMap(order -> order.getProducts().stream())
-                .collect(Collectors.toList());
-        newOrder.setProducts(allProducts);
+        // 기존 주문의 상태를 PAID로 업데이트
+        for (Order order : orders) {
+            order.setStatus("PAID");
+            orderRepository.save(order);
+        }
 
-        // 총 금액 계산 및 수량 설정
-        int totalAmount = allProducts.stream()
-                .mapToInt(Product::getPrice)
-                .sum();
-        newOrder.setTotalAmount(totalAmount);
-        newOrder.setQuantity(totalAmount / allProducts.get(0).getPrice());
-
-        // 기존 주문 삭제
-        orderRepository.deleteAll(orders);
-
-        // 새로운 주문 저장
-        return orderRepository.save(newOrder);
+        // 새로운 주문 상태 저장
+        return orderStatusRepository.save(newOrderStatus);
     }
 
     public void deleteOrder(String id) {

@@ -57,4 +57,8 @@ public class OrderController {
         orderService.deleteOrder(id);
     }
 
+    @PutMapping("/{userId}/merge")
+    public OrderStatus mergeOrders(@PathVariable String userId, @RequestBody List<String> orderIds) {
+        return orderService.mergeOrders(userId, orderIds);
+    }
 }
