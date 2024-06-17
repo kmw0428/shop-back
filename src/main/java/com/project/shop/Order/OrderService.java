@@ -40,6 +40,10 @@ public class OrderService {
         return orderRepository.findByUser(user);
     }
 
+    public List<OrderStatus> getOrderStatusByUser(User user) {
+        return orderStatusRepository.findByUser(user);
+    }
+
     public Order createOrder(Order order) {
         // 제품 정보 설정
         List<Product> products = order.getProducts().stream()
@@ -132,6 +136,9 @@ public class OrderService {
             throw new IllegalArgumentException("No orders found for the given IDs");
         }
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
         for (Order order : orders) {
             if (!order.getUser().getId().equals(userId)) {
                 throw new IllegalArgumentException("Orders do not belong to the same user");
@@ -140,6 +147,7 @@ public class OrderService {
 
         OrderStatus newOrderStatus = new OrderStatus();
         newOrderStatus.setOrders(orders);
+        newOrderStatus.setUser(user); // 추가된 부분
 
         for (Order order : orders) {
             order.setStatus(status);

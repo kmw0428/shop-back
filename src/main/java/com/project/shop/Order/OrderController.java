@@ -32,6 +32,11 @@ public class OrderController {
         return orderService.getOrderByUser(user);
     }
 
+    @GetMapping("/{user}/status")
+    public List<OrderStatus> getOrderStatusByUser(@PathVariable User user) {
+        return orderService.getOrderStatusByUser(user);
+    }
+
     @PostMapping
     public Order createOrder(@RequestBody Order order) {
         return orderService.createOrder(order);
