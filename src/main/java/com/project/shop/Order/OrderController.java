@@ -22,6 +22,11 @@ public class OrderController {
         return orderService.getAllOrders();
     }
 
+    @GetMapping("/orderstatuses")
+    public List<OrderStatus> getAllOrderStatuses() {
+        return orderService.getAllOrderStatuses();
+    }
+
     @GetMapping("/{id}")
     public Optional<Order> getOrderById(@PathVariable String id) {
         return orderService.getOrderById(id);

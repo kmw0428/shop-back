@@ -32,6 +32,10 @@ public class OrderService {
         return orderRepository.findAll();
     }
 
+    public List<OrderStatus> getAllOrderStatuses() {
+        return orderStatusRepository.findAll();
+    }
+
     public Optional<Order> getOrderById(String id) {
         return orderRepository.findById(id);
     }
