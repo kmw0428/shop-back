@@ -4,6 +4,8 @@ import com.project.shop.Product.Product;
 import com.project.shop.Product.ProductRepository;
 import com.project.shop.User.User;
 import com.project.shop.User.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
@@ -51,8 +55,13 @@ public class OrderService {
     public Order createOrder(Order order) {
         // 제품 정보 설정
         List<Product> products = order.getProducts().stream()
-                .map(product -> productRepository.findById(product.getId())
-                        .orElseThrow(() -> new RuntimeException("Product not found: " + product.getId())))
+                .map(product -> {
+                    Product foundProduct = productRepository.findById(product.getId())
+                            .orElseThrow(() -> new RuntimeException("Product not found: " + product.getId()));
+                    // 클라이언트에서 보낸 가격으로 설정
+                    foundProduct.setPrice(product.getPrice());
+                    return foundProduct;
+                })
                 .collect(Collectors.toList());
 
         order.setProducts(products);
@@ -68,7 +77,14 @@ public class OrderService {
 
         // 총 금액 및 수량 설정
         int newTotalAmount = order.getTotalAmount();
-        int newQuantity = newTotalAmount / products.get(0).getPrice();  // 수량 계산
+        int newQuantity = 1;
+
+        // 제품 가격 검증 및 수량 계산
+        if (products.isEmpty() || products.get(0).getPrice() == 0) {
+            throw new RuntimeException("Invalid product price or empty product list");
+        } else {
+            newQuantity = newTotalAmount / products.get(0).getPrice();  // 수량 계산
+        }
 
         order.setTotalAmount(newTotalAmount);
         order.setQuantity(newQuantity);  // 수량 설정
